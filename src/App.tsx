@@ -1,5 +1,11 @@
+import Header from "@/components/header";
+
 const App = () => {
-  return <div className="text-5xl text-red-500">App</div>;
+  return (
+    <main className="p-1 flex flex-col gap-y-1">
+      <Header />
+    </main>
+  );
 };
 
 export default App;
