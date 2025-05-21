@@ -12,6 +12,7 @@ const Header = () => {
     title: string;
     subOptions: {
       title: string;
+      keys?: string[];
     }[];
   }[] = useMemo(
     () => [
@@ -37,18 +38,23 @@ const Header = () => {
         subOptions: [
           {
             title: "Undo",
+            keys: ["Ctrl", "Z"],
           },
           {
             title: "Redo",
+            keys: ["Ctrl", "Y"],
           },
           {
             title: "Cut",
+            keys: ["Ctrl", "X"],
           },
           {
             title: "Copy",
+            keys: ["Ctrl", "C"],
           },
           {
             title: "Paste",
+            keys: ["Ctrl", "P"],
           },
         ],
       },
@@ -80,9 +86,15 @@ const Header = () => {
                 return (
                   <DropdownMenuItem
                     key={subOption.title}
-                    className="cursor-pointer"
+                    className="cursor-pointer flex-row justify-between items-center"
                   >
-                    {subOption.title}
+                    <p>{subOption.title}</p>
+
+                    {subOption.keys && (
+                      <p className="text-[10px] text-gray-700">
+                        {subOption.keys.join("+")}
+                      </p>
+                    )}
                   </DropdownMenuItem>
                 );
               })}
