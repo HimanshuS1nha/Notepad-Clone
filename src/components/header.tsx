@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 
 import {
   DropdownMenu,
@@ -7,12 +7,25 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { useZoom } from "@/hooks/use-zoom";
+
 const Header = () => {
+  const { zoom, setZoom } = useZoom();
+
+  const handleZoomIn = useCallback(() => {
+    setZoom(Math.min(zoom + 0.25, 2));
+  }, [zoom]);
+
+  const handleZoomOut = useCallback(() => {
+    setZoom(Math.max(zoom - 0.25, 0.5));
+  }, [zoom]);
+
   const options: {
     title: string;
     subOptions: {
       title: string;
       keys?: string[];
+      action?: () => void;
     }[];
   }[] = useMemo(
     () => [
@@ -63,14 +76,18 @@ const Header = () => {
         subOptions: [
           {
             title: "Zoom In",
+            keys: ["Ctrl", "+"],
+            action: handleZoomIn,
           },
           {
             title: "Zoom Out",
+            keys: ["Ctrl", "-"],
+            action: handleZoomOut,
           },
         ],
       },
     ],
-    []
+    [handleZoomIn, handleZoomOut]
   );
   return (
     <nav className="flex gap-x-3 items-center border-b border-b-gray-200">
@@ -87,6 +104,7 @@ const Header = () => {
                   <DropdownMenuItem
                     key={subOption.title}
                     className="cursor-pointer flex-row justify-between items-center"
+                    onClick={subOption.action}
                   >
                     <p>{subOption.title}</p>
 
