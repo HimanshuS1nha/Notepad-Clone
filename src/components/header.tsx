@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useEffect } from "react";
 
 import {
   DropdownMenu,
@@ -89,6 +89,27 @@ const Header = () => {
     ],
     [handleZoomIn, handleZoomOut]
   );
+
+  const handleKeyPress = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.ctrlKey) {
+        if (e.key === "+") {
+          handleZoomIn();
+        } else if (e.key === "-") {
+          handleZoomOut();
+        }
+      }
+    },
+    [handleZoomIn, handleZoomOut]
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, []);
   return (
     <nav className="flex gap-x-3 items-center border-b border-b-gray-200">
       {options.map((option) => {
