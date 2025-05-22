@@ -8,9 +8,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { useZoom } from "@/hooks/use-zoom";
+import { useEditor } from "@/hooks/use-editor";
 
 const Header = () => {
   const { zoom, setZoom } = useZoom();
+
+  const presentText = useEditor((state) => state.presentText);
+  const setText = useEditor((state) => state.setText);
 
   const handleZoomIn = useCallback(() => {
     setZoom(Math.min(zoom + 0.25, 2));
@@ -60,14 +64,25 @@ const Header = () => {
           {
             title: "Cut",
             keys: ["Ctrl", "X"],
+            action: async () => {
+              await navigator.clipboard.writeText(presentText);
+              setText("");
+            },
           },
           {
             title: "Copy",
             keys: ["Ctrl", "C"],
+            action: async () => {
+              await navigator.clipboard.writeText(presentText);
+            },
           },
           {
             title: "Paste",
             keys: ["Ctrl", "P"],
+            action: async () => {
+              const clipboardText = await navigator.clipboard.readText();
+              setText(presentText + clipboardText);
+            },
           },
         ],
       },
@@ -87,7 +102,7 @@ const Header = () => {
         ],
       },
     ],
-    [handleZoomIn, handleZoomOut]
+    [handleZoomIn, handleZoomOut, presentText]
   );
 
   const handleKeyPress = useCallback(
