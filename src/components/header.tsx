@@ -1,5 +1,5 @@
 import { useMemo, useCallback, useEffect } from "react";
-import { open } from "@tauri-apps/plugin-dialog";
+import { open, save } from "@tauri-apps/plugin-dialog";
 import { writeTextFile, readTextFile } from "@tauri-apps/plugin-fs";
 import { toast } from "react-hot-toast";
 
@@ -53,6 +53,33 @@ const Header = () => {
     }
   }, []);
 
+  const handleSaveAs = useCallback(async () => {
+    const filePath = await save({
+      defaultPath: `${presentText.split(" ").slice(0, 3).join(" ")}.txt`,
+      filters: [
+        {
+          name: "Text Files",
+          extensions: ["txt"],
+        },
+      ],
+    });
+
+    if (filePath) {
+      await writeTextFile(filePath, presentText);
+      setFilePath(filePath);
+      toast.success("File saved successfully");
+    }
+  }, [presentText]);
+
+  const handleSave = useCallback(async () => {
+    if (filePath) {
+      await writeTextFile(filePath, presentText);
+      toast.success("File saved successfully");
+    } else {
+      await handleSaveAs();
+    }
+  }, [filePath, handleSaveAs, presentText]);
+
   const options: {
     title: string;
     subOptions: {
@@ -71,9 +98,11 @@ const Header = () => {
           },
           {
             title: "Save",
+            action: handleSave,
           },
           {
             title: "Save As",
+            action: handleSaveAs,
           },
           {
             title: "Exit",
@@ -134,7 +163,14 @@ const Header = () => {
         ],
       },
     ],
-    [handleZoomIn, handleZoomOut, presentText, handleOpenFile]
+    [
+      handleZoomIn,
+      handleZoomOut,
+      presentText,
+      handleOpenFile,
+      handleSave,
+      handleSaveAs,
+    ]
   );
 
   const handleKeyPress = useCallback(
@@ -146,10 +182,12 @@ const Header = () => {
           handleZoomOut();
         } else if (e.key === "o") {
           handleOpenFile();
+        } else if (e.key === "s") {
+          handleSave();
         }
       }
     },
-    [handleZoomIn, handleZoomOut, handleOpenFile]
+    [handleZoomIn, handleZoomOut, handleOpenFile, handleSave]
   );
 
   useEffect(() => {
