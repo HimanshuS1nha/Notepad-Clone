@@ -15,6 +15,8 @@ const Header = () => {
 
   const presentText = useEditor((state) => state.presentText);
   const setText = useEditor((state) => state.setText);
+  const undo = useEditor((state) => state.undo);
+  const redo = useEditor((state) => state.redo);
 
   const handleZoomIn = useCallback(() => {
     setZoom(Math.min(zoom + 0.25, 2));
@@ -56,10 +58,12 @@ const Header = () => {
           {
             title: "Undo",
             keys: ["Ctrl", "Z"],
+            action: undo,
           },
           {
             title: "Redo",
             keys: ["Ctrl", "Y"],
+            action: redo,
           },
           {
             title: "Cut",
