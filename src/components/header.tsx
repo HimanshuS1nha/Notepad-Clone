@@ -2,6 +2,7 @@ import { useMemo, useCallback, useEffect } from "react";
 import { open, save } from "@tauri-apps/plugin-dialog";
 import { writeTextFile, readTextFile } from "@tauri-apps/plugin-fs";
 import { toast } from "react-hot-toast";
+import { exit } from "@tauri-apps/plugin-process";
 
 import {
   DropdownMenu,
@@ -106,6 +107,9 @@ const Header = () => {
           },
           {
             title: "Exit",
+            action: async () => {
+              await exit(0);
+            },
           },
         ],
       },
