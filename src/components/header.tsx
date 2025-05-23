@@ -1,6 +1,7 @@
 import { useMemo, useCallback, useEffect } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { writeTextFile, readTextFile } from "@tauri-apps/plugin-fs";
+import { toast } from "react-hot-toast";
 
 import {
   DropdownMenu,
@@ -31,20 +32,24 @@ const Header = () => {
   }, [zoom]);
 
   const handleOpenFile = useCallback(async () => {
-    const newFilePath = await open({
-      multiple: false,
-      filters: [
-        {
-          name: "Text Files",
-          extensions: ["txt", "md"],
-        },
-      ],
-    });
+    try {
+      const newFilePath = await open({
+        multiple: false,
+        filters: [
+          {
+            name: "Text Files",
+            extensions: ["txt", "md"],
+          },
+        ],
+      });
 
-    if (newFilePath) {
-      const contents = await readTextFile(newFilePath);
-      setFilePath(newFilePath);
-      setText(contents);
+      if (newFilePath) {
+        const contents = await readTextFile(newFilePath);
+        setFilePath(newFilePath);
+        setText(contents);
+      }
+    } catch {
+      toast.error("Some error occured. while opening file");
     }
   }, []);
 
@@ -139,10 +144,12 @@ const Header = () => {
           handleZoomIn();
         } else if (e.key === "-") {
           handleZoomOut();
+        } else if (e.key === "o") {
+          handleOpenFile();
         }
       }
     },
-    [handleZoomIn, handleZoomOut]
+    [handleZoomIn, handleZoomOut, handleOpenFile]
   );
 
   useEffect(() => {
