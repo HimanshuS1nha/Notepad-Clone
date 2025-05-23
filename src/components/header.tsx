@@ -1,4 +1,6 @@
 import { useMemo, useCallback, useEffect } from "react";
+import { open } from "@tauri-apps/plugin-dialog";
+import { writeTextFile, readTextFile } from "@tauri-apps/plugin-fs";
 
 import {
   DropdownMenu,
@@ -17,6 +19,8 @@ const Header = () => {
   const setText = useEditor((state) => state.setText);
   const undo = useEditor((state) => state.undo);
   const redo = useEditor((state) => state.redo);
+  const filePath = useEditor((state) => state.filePath);
+  const setFilePath = useEditor((state) => state.setFilePath);
 
   const handleZoomIn = useCallback(() => {
     setZoom(Math.min(zoom + 0.25, 2));
@@ -25,6 +29,24 @@ const Header = () => {
   const handleZoomOut = useCallback(() => {
     setZoom(Math.max(zoom - 0.25, 0.5));
   }, [zoom]);
+
+  const handleOpenFile = useCallback(async () => {
+    const newFilePath = await open({
+      multiple: false,
+      filters: [
+        {
+          name: "Text Files",
+          extensions: ["txt", "md"],
+        },
+      ],
+    });
+
+    if (newFilePath) {
+      const contents = await readTextFile(newFilePath);
+      setFilePath(newFilePath);
+      setText(contents);
+    }
+  }, []);
 
   const options: {
     title: string;
@@ -40,6 +62,7 @@ const Header = () => {
         subOptions: [
           {
             title: "Open",
+            action: handleOpenFile,
           },
           {
             title: "Save",
@@ -106,7 +129,7 @@ const Header = () => {
         ],
       },
     ],
-    [handleZoomIn, handleZoomOut, presentText]
+    [handleZoomIn, handleZoomOut, presentText, handleOpenFile]
   );
 
   const handleKeyPress = useCallback(
