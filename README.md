@@ -2,6 +2,10 @@
 
 A minimalist and fast notepad clone for effortless note-taking, editing, and saving — perfect for quick thoughts and to-do lists.
 
+## Screenshots
+
+![Notepad Clone](https://github.com/user-attachments/assets/251de8f1-48b9-4b70-bbeb-9fd617c05f9a)
+
 ## Get Started
 
 - Install dependencies
